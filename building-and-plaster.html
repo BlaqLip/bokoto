@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Mabokoto Construction Company</title>
+  <!-- Font Awesome 6 (free) for icons, arrows, toggle & background scatter -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ----- RESET & VARIABLES ----- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s, color 0.2s;
+      position: relative;
+      padding: 1rem;
+    }
+
+    /* light mode default (forest green undertones) */
+    body.light {
+      --bg-base: #e8f0e5; /* soft mint */
+      --bg-card: rgba(255, 255, 255, 0.6);
+      --text-primary: #1a3b2e;
+      --text-secondary: #2d5a3f;
+      --arrow-bg: rgba(30, 70, 40, 0.7);
+      --arrow-hover: #2c5f2d;
+      --glow-color: #a3d8a3;
+      --border-light: rgba(60, 90, 50, 0.3);
+      --scatter-opacity: 0.2;
+      --toggle-sun: #f5b342;
+      --toggle-moon: #5f6b7a;
+    }
+
+    /* dark mode – forest night */
+    body.dark {
+      --bg-base: #0f281f;
+      --bg-card: rgba(20, 45, 30, 0.7);
+      --text-primary: #d2ecd8;
+      --text-secondary: #b2d8b2;
+      --arrow-bg: rgba(40, 80, 45, 0.8);
+      --arrow-hover: #3f8b4a;
+      --glow-color: #406645;
+      --border-light: rgba(120, 150, 100, 0.25);
+      --scatter-opacity: 0.15;
+      --toggle-sun: #e6c35c;
+      --toggle-moon: #b0c4de;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+    }
+
+    /* ----- SCATTERED BUILDING MATERIAL BACKGROUND (icons & scratches) ----- */
+    .scatter-field {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .scatter-field i,
+    .scatter-field::before,
+    .scatter-field::after {
+      position: absolute;
+      font-size: clamp(1.8rem, 8vw, 5rem);
+      color: var(--text-primary);
+      opacity: var(--scatter-opacity);
+      transform: rotate(calc(var(--r, 0) * 1deg));
+      filter: blur(0.3px) drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+      user-select: none;
+    }
+
+    /* random placement via custom properties (set in style, but we'll hard-set positions) */
+    .scatter-field i:nth-child(1) { top: 12%; left: 8%; --r: 15; font-size: 4rem; }
+    .scatter-field i:nth-child(2) { bottom: 20%; right: 5%; --r: -8; font-size: 5rem; }
+    .scatter-field i:nth-child(3) { top: 30%; right: 15%; --r: 42; font-size: 3.2rem; }
+    .scatter-field i:nth-child(4) { bottom: 35%; left: 12%; --r: 73; font-size: 4.5rem; }
+    .scatter-field i:nth-child(5) { top: 70%; left: 20%; --r: -15; font-size: 3.8rem; }
+    .scatter-field i:nth-child(6) { top: 15%; right: 30%; --r: 120; font-size: 3rem; }
+    .scatter-field i:nth-child(7) { bottom: 10%; left: 40%; --r: 55; font-size: 4.2rem; }
+    .scatter-field i:nth-child(8) { top: 50%; right: 35%; --r: -22; font-size: 5rem; }
+    .scatter-field i:nth-child(9) { bottom: 45%; left: 70%; --r: 90; font-size: 3.5rem; }
+    .scatter-field i:nth-child(10) { top: 80%; right: 8%; --r: -45; font-size: 4.8rem; }
+
+    /* scratches / glass scraped lines effect – pseudo overlays */
+    .scatter-field::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 8px,
+        rgba(180, 200, 160, 0.15) 8px,
+        rgba(150, 130, 100, 0.08) 12px
+      );
+      pointer-events: none;
+      z-index: 1;
+      backdrop-filter: blur(1px) brightness(1.02);
+      -webkit-mask: linear-gradient(black, black) content-box, 
+                    repeating-linear-gradient( -45deg, transparent 0px, transparent 4px, black 4px, black 8px );
+      mask-composite: exclude;
+    }
+
+    .scatter-field::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 30% 40%, rgba(200,220,180,0.1) 0%, transparent 30%),
+                  repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.02) 6px);
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ----- MAIN CARD (glass) ----- */
+    .gallery-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 1100px;
+      backdrop-filter: blur(8px) saturate(160%);
+      -webkit-backdrop-filter: blur(8px) saturate(160%);
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 3rem 2rem 3rem 2rem;
+      box-shadow: 0 20px 40px rgba(0, 20, 0, 0.4), inset 0 0 40px rgba(255, 255, 240, 0.3);
+      padding: 2rem 1.5rem 2rem 1.5rem;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    /* header with toggle */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header h1 {
+      font-weight: 400;
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--text-primary), #7aa87a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      border-left: 5px solid #3f7840;
+      padding-left: 1.2rem;
+      filter: drop-shadow(2px 4px 6px rgba(0,30,0,0.3));
+    }
+
+    /* dark/light toggle button – glass style */
+    .theme-toggle {
+      background: rgba(70, 100, 70, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-light);
+      border-radius: 60px;
+      padding: 0.3rem 0.6rem;
+      display: flex;
+      gap: 0.4rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .theme-toggle button {
+      background: transparent;
+      border: none;
+      font-size: 1.8rem;
+      width: 48px;
+      height: 48px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-secondary);
+      transition: 0.2s;
+      background: rgba(255,255,240,0.1);
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(200,220,180,0.3);
+    }
+
+    .theme-toggle button.active {
+      background: var(--arrow-hover);
+      color: #fff8e0;
+      box-shadow: 0 0 12px var(--glow-color);
+      border-color: #d4edda;
+    }
+
+    .theme-toggle button i {
+      filter: drop-shadow(0 2px 4px black);
+    }
+
+    /* ----- SLIDER SECTION ----- */
+    .slider-container {
+      position: relative;
+      width: 100%;
+      margin: 1.5rem 0 2rem;
+    }
+
+    .slide {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      animation: fade 0.4s ease;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    @keyframes fade {
+      from { opacity: 0.3; transform: scale(0.98); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .slide-img {
+      width: 100%;
+      max-height: 500px;
+      object-fit: cover;
+      border-radius: 32px 32px 32px 8px;
+      border: 3px solid rgba(90, 130, 70, 0.5);
+      box-shadow: 0 20px 30px -8px rgba(0, 20, 0, 0.7), inset 0 0 0 2px rgba(220, 240, 200, 0.4);
+      transition: border 0.2s;
+      background: #2d4a2d;
+    }
+
+    .slide-caption {
+      margin-top: 1.8rem;
+      text-align: center;
+      background: rgba(30, 50, 30, 0.2);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 60px 20px 60px 20px;
+      padding: 1.2rem 2rem;
+      width: fit-content;
+      max-width: 90%;
+      border: 1px dashed var(--border-light);
+    }
+
+    .slide-caption h3 {
+      font-size: 2rem;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: var(--text-primary);
+      text-shadow: 2px 2px 0 rgba(0,30,0,0.3);
+    }
+
+    .slide-caption p {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+    }
+
+    /* arrows */
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--arrow-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(200,230,180,0.3);
+      color: white;
+      font-size: 2.8rem;
+      width: 70px;
+      height: 70px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s;
+      z-index: 20;
+      box-shadow: 0 8px 18px rgba(0, 20, 0, 0.6);
+    }
+
+    .nav-arrow:hover {
+      background: var(--arrow-hover);
+      border-color: #c0e0b0;
+      width: 75px;
+      height: 75px;
+      box-shadow: 0 0 22px var(--glow-color);
+    }
+
+    .prev {
+      left: -15px;
+    }
+    .next {
+      right: -15px;
+    }
+
+    /* dots */
+    .dots-container {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.8rem;
+      flex-wrap: wrap;
+    }
+
+    .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 18px;
+      background: rgba(100, 130, 90, 0.5);
+      border: 2px solid rgba(50, 80, 30, 0.6);
+      cursor: pointer;
+      transition: 0.2s;
+      backdrop-filter: blur(4px);
+    }
+
+    .dot.active {
+      background: #6fa86f;
+      width: 40px;
+      border-color: #e0ffd0;
+      box-shadow: 0 0 14px #a5d6a5;
+    }
+
+    /* sample snippet hint (copy area) */
+    .image-library-note {
+      margin-top: 2.5rem;
+      padding: 1.2rem;
+      background: rgba(0, 20, 0, 0.3);
+      backdrop-filter: blur(8px);
+      border-radius: 30px 10px 30px 10px;
+      border: 1px solid var(--border-light);
+      font-size: 0.95rem;
+      text-align: center;
+      color: var(--text-secondary);
+    }
+
+    .image-library-note i {
+      margin-right: 0.5rem;
+      color: #b8d9b0;
+    }
+
+    .image-library-note code {
+      background: #1e3a1e;
+      color: #d4f0d4;
+      padding: 0.2rem 0.8rem;
+      border-radius: 40px;
+      font-family: monospace;
+    }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      .gallery-wrapper { padding: 1rem; }
+      .nav-arrow { width: 50px; height: 50px; font-size: 2rem; }
+      .prev { left: -5px; }
+      .next { right: -5px; }
+      .slide-img { max-height: 300px; }
+      .slide-caption h3 { font-size: 1.4rem; }
+      .theme-toggle button { width: 40px; height: 40px; font-size: 1.4rem; }
+    }
+
+    @media (max-width: 480px) {
+      .header { flex-direction: column; align-items: start; }
+      .nav-arrow { top: 40%; }
+    }
+
+    /* little extra glass scratches on card */
+    .gallery-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 10px; left: 10px; right: 10px; bottom: 10px;
+      border-radius: inherit;
+      pointer-events: none;
+      border: 1px dashed rgba(180, 210, 150, 0.3);
+      background: repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(210,230,190,0.1) 12px, rgba(100,120,70,0.05) 16px);
+      z-index: -1;
+    }
+  </style>
+</head>
+<body class="light">
+  <!-- scattered building material icons (font awesome) -->
+  <div class="scatter-field">
+    <i class="fas fa-hammer"></i>
+    <i class="fas fa-wrench"></i>
+    <i class="fas fa-screwdriver"></i>
+    <i class="fas fa-paint-roller"></i>
+    <i class="fas fa-trowel"></i>
+    <i class="fas fa-hard-hat"></i>
+    <i class="fas fa-tools"></i>
+    <i class="fas fa-ruler-combined"></i>
+    <i class="fas fa-drafting-compass"></i>
+    <i class="fas fa-cubes"></i>
+    <!-- extra scratches overlayed via pseudo -->
+  </div>
+
+  <main class="gallery-wrapper">
+    <!-- header with toggle -->
+    <div class="header">
+      <div>
+      <img class="fas fa-tree" src="logo round.png" style="display:block; width:150px; height:100px; z-index:10; border-radius:35px;" >
+      </div>
+      <div class="theme-toggle">
+        <button id="btn-light" class="active" title="light mode"><i class="fas fa-sun"></i></button>
+        <button id="btn-dark" title="dark mode"><i class="fas fa-moon"></i></button>
+      </div>
+    </div>
+
+    <!-- slider section with arrows -->
+    <div class="slider-container">
+      <!-- slides will be injected via js, but we keep a static fallback -->
+      <div class="slide active" id="slide-template-placeholder" style="display: none;"><!-- template --></div>
+      
+      <!-- arrow controls -->
+      <div class="nav-arrow prev" id="prevArrow"><i class="fas fa-chevron-left"></i></div>
+      <div class="nav-arrow next" id="nextArrow"><i class="fas fa-chevron-right"></i></div>
+
+      <!-- dynamic slide container -->
+      <div id="slidesContainer"></div>
+    </div>
+
+    <!-- sample snippet / library info -->
+    <div class="image-library-note">
+      <div class="slide-caption" style="margin:5px -5px 5px 5px; display:flexbox; width:auto; height:fit-content;">
+        <a href="building-and-plaster.html">Building and Plaster</a>
+        |
+        <a href="plumbing-services.html">Plumbing Services</a>
+        |
+        <a href="interior-and-finishing.html">Interior & Finishing</a>
+        |
+        <a href="tiling-services.html">Tiling</a>
+        |
+        <a href="solar-geyser-energy-installation.html">Solar Geyser Energy Installation</a>
+        |
+        <a href="maintenance-services.html">Maintenance Services</a>
+      </div> 
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      // ----- GALLERY DATA (sample contractor/service images) -----
+      // REPLACE THIS ARRAY WITH YOUR OWN LIBRARY OF IMAGES (supports local or online)
+      const galleryItems = [
+        {
+          img: "building.jpg",
+          title: "building Services",
+          desc: "All brick types and specifications",
+        },
+        {
+          img: "built-backfilled.jpg",
+          title: "Back filling",
+          desc: "backfilling and compacting to ensure a solid foundation for the next stages of construction"
+        },
+
+        {
+          img: "room&plas.jpg",
+          title: "building no plaster",
+          desc: "We plaster all rooms and steps to be ready for tiling or paint"
+        },
+        {
+          img: "room&plass.jpg",
+          title: "Dry complete plaster",
+          desc: "Dry steps ready for tiling"
+        },
+        {
+          img: "build1.jpg",
+          title: "Dry complete plaster",
+          desc: "Dry steps ready for tiling"
+        },
+        {
+          img: "build0.jpg",
+          title: "building no plaster",
+          desc: "only fill plastered"
+        },
+        {
+          img: "topslab.jpg",
+          title: "Dry complete plaster",
+          desc: "Dry steps ready for tiling"
+        },
+        {
+          img: "completeslab.jpg",
+          title: "building no plaster",
+          desc: "only fill plastered"
+        }
+    
+      ];
+
+      // ----- DOM elements -----
+      const slidesContainer = document.getElementById('slidesContainer');
+      const dotsContainer = document.getElementById('dotsContainer');
+      const prevBtn = document.getElementById('prevArrow');
+      const nextBtn = document.getElementById('nextArrow');
+      const btnLight = document.getElementById('btn-light');
+      const btnDark = document.getElementById('btn-dark');
+      const body = document.body;
+
+      // state
+      let currentSlide = 0;
+      let slides = []; // will hold slide elements
+
+      // ----- build slides from galleryItems -----
+      function buildSlides() {
+        slidesContainer.innerHTML = ''; // clear placeholder
+        galleryItems.forEach((item, index) => {
+          const slideDiv = document.createElement('div');
+          slideDiv.className = 'slide';
+          if (index === 0) slideDiv.classList.add('active');
+
+          // image
+          const img = document.createElement('img');
+          img.src = item.img;
+          img.alt = item.title;
+          img.className = 'slide-img';
+          img.loading = 'lazy';
+
+          // caption box
+          const captionDiv = document.createElement('div');
+          captionDiv.className = 'slide-caption';
+          captionDiv.innerHTML = `<h3>${item.title}</h3><a href="building-and-plaster.html">${item.desc}</a>`;
+
+          slideDiv.appendChild(img);
+          slideDiv.appendChild(captionDiv);
+          slidesContainer.appendChild(slideDiv);
+          slides.push(slideDiv);
+        });
+      }
+
+      // ----- update dots and active class -----
+      function updateDotsAndArrows() {
+        // slides active class
+        slides.forEach((slide, idx) => {
+          slide.classList.toggle('active', idx === currentSlide);
+        });
+
+        // redraw dots
+        dotsContainer.innerHTML = '';
+        galleryItems.forEach((_, idx) => {
+          const dot = document.createElement('div');
+          dot.className = 'dot';
+          if (idx === currentSlide) dot.classList.add('active');
+          dot.addEventListener('click', () => {
+            currentSlide = idx;
+            updateDotsAndArrows();
+          });
+          dotsContainer.appendChild(dot);
+        });
+      }
+
+      // ----- navigation functions -----
+      function nextSlide() {
+        currentSlide = (currentSlide + 1) % galleryItems.length;
+        updateDotsAndArrows();
+      }
+
+      function prevSlide() {
+        currentSlide = (currentSlide - 1 + galleryItems.length) % galleryItems.length;
+        updateDotsAndArrows();
+      }
+
+      // ----- event listeners for arrows (with debounce / smooth) -----
+      prevBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        prevSlide();
+      });
+
+      nextBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        nextSlide();
+      });
+
+      // optional keyboard navigation
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+          prevSlide();
+          e.preventDefault();
+        } else if (e.key === 'ArrowRight') {
+          nextSlide();
+          e.preventDefault();
+        }
+      });
+
+      // ----- dark/light toggle logic -----
+      function setTheme(theme) {
+        if (theme === 'dark') {
+          body.classList.remove('light');
+          body.classList.add('dark');
+          btnDark.classList.add('active');
+          btnLight.classList.remove('active');
+        } else {
+          body.classList.remove('dark');
+          body.classList.add('light');
+          btnLight.classList.add('active');
+          btnDark.classList.remove('active');
+        }
+      }
+
+      btnLight.addEventListener('click', () => setTheme('light'));
+      btnDark.addEventListener('click', () => setTheme('dark'));
+
+      // ----- initialise gallery -----
+      buildSlides();
+      updateDotsAndArrows();
+
+      // optional touch swipe (basic)
+      let touchStartX = 0;
+      slidesContainer.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      slidesContainer.addEventListener('touchend', (e) => {
+        const touchEndX = e.changedTouches[0].screenX;
+        const diff = touchStartX - touchEndX;
+        if (Math.abs(diff) > 50) { // threshold
+          if (diff > 0) nextSlide();
+          else prevSlide();
+        }
+      });
+
+      // set default theme as light
+      setTheme('light');
+
+      // small extra: dynamically adjust background icon opacity with theme (already using css var)
+    })();
+  </script>
+
+  <!-- ensure scattered icons respect theme opacity (set by variable) -->
+  <style>
+    /* small tweak: make glass card stand out more */
+    .gallery-wrapper {
+      position: relative;
+      background: var(--bg-card);
+    }
+    .slide-caption {
+      background: rgba(30, 50, 30, 0.4);
+    }
+    .fa-tree {
+      z-index: 300;
+
+    }
+    a {
+        text-decoration: none;
+        color:#e6c35c;
+    }
+  </style>
+</body>
+</html>
