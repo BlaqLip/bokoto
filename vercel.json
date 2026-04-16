@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "static": {
+    "routes": [
+      {
+        "src": "/(.*)\.(jpg|jpeg|png|gif|svg)",
+        "dest": "/api/images",
+        "headers": {
+          "Cache-Control": "max-age=31536000"
+        },
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/api/index",
+      }
+    ],
+  },
+  "optimizeFonts": true,
+  "image": {
+    "sizes": [
+      { "width": 320, "height": 480 },
+      { "width": 640, "height": 960 },
+      { "width": 1280, "height": 960 },
+    ],
+  }
+}
