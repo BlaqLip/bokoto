@@ -2,34 +2,74 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Mabokoto Construction Company</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <title>Your Page Title</title>
 </head>
-<body>
-    <header>
-        <img src="logo-round.png" alt="Logo" />
-        <h1>Welcome to Our Website</h1>
-    </header>
-    <main>
-        <section>
-            <h2>Important Section</h2>
-            <p>Some important content goes here.</p>
+<body class="light">
+    <div class="scatter-field">
+        <i class="fas fa-hammer"></i>
+        <i class="fas fa-wrench"></i>
+        <i class="fas fa-screwdriver"></i>
+        <i class="fas fa-paint-roller"></i>
+        <i class="fas fa-trowel"></i>
+        <i class="fas fa-hard-hat"></i>
+        <i class="fas fa-tools"></i>
+        <i class="fas fa-ruler-combined"></i>
+        <i class="fas fa-drafting-compass"></i>
+        <i class="fas fa-cubes"></i>
+    </div>
+
+    <main class="gallery-wrapper">
+        <div class="header">
+            <div>
+                <img src="logo-round.png" alt="Mabokoto Logo" style="display:block; width:150px; height:100px; z-index:10; border-radius:35px;">
+            </div>
+            <div class="theme-toggle">
+                <button id="btn-light" class="active" title="light mode"><i class="fas fa-sun"></i></button>
+                <button id="btn-dark" title="dark mode"><i class="fas fa-moon"></i></button>
+            </div>
+        </div>
+
+        <section style="text-align: center; margin-bottom: 2rem;">
+            <h1>Mabokoto Construction</h1>
+            <p style="font-size: 1.2rem; color: var(--text-secondary);">Quality Building & Maintenance Services</p>
         </section>
-        <section>
-            <h2>Gallery</h2>
-            <p>${item.desc}</p>
-        </section>
+
+        <div class="image-library-note">
+            <div class="slide-caption" style="margin:5px; width:auto; height:fit-content; display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
+                    <a href="building-and-plaster.html" class="nav-link">Building & Plaster</a>
+                    <a href="plumbing-services.html" class="nav-link">Plumbing Services</a>
+                    <a href="interior-and-finishing.html" class="nav-link">Interior & Finishing</a>
+                    <a href="tiling-services.html" class="nav-link">Tiling</a>
+                    <a href="solar-geyser-energy-installation.html" class="nav-link">Solar Energy</a>
+                    <a href="maintenance-services.html" class="nav-link">Maintenance</a>
+                    <a href="about-us.html" class="nav-link">About Us</a>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 2rem; text-align: center; color: var(--text-secondary);">
+            <p>Mobile: +27 72 146 7896</p>
+            <p>Email: <a href="mailto:info@mabokoto.co.za">info@mabokoto.co.za</a></p>
+        </div>
     </main>
-    <footer>
-        <p>&copy; 2026 Your Company. All rights reserved.</p>
-    </footer>
+
+    <script src="script.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        .nav-link {
+            padding: 10px 20px;
+            background: rgba(30, 50, 30, 0.2);
+            border-radius: 20px;
+            border: 1px solid var(--border-light);
+            transition: all 0.3s;
         }
-        header, main, footer {
-            display: flex;
+        .nav-link:hover {
+            background: var(--arrow-hover);
+            color: white;
+            transform: translateY(-2px);
         }
     </style>
 </body>
