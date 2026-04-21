@@ -17,13 +17,20 @@
         if (btnLight) btnLight.classList.add('active');
         if (btnDark) btnDark.classList.remove('active');
       }
+      localStorage.setItem('theme', theme);
     }
 
     if (btnLight) btnLight.addEventListener('click', () => setTheme('light'));
     if (btnDark) btnDark.addEventListener('click', () => setTheme('dark'));
 
-    // Set default theme
-    setTheme('light');
+    // Set default theme or system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      setTheme(savedTheme);
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(prefersDark ? 'dark' : 'light');
+    }
   }
 
   // Gallery Slider Logic
