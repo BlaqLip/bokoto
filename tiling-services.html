@@ -1,55 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tiling Services</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 20px;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
-            margin: 0 auto;
-        }
-        .touch-target {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-        }
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            .touch-target {
-                padding: 15px;
-                font-size: 16px;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Tiling Services - Mabokoto Construction</title>
+    <link rel="canonical" href="https://mabokoto-construction-6gm2.vercel.app/tiling-services.html">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <div class="container">
-        <h1>Tiling Services</h1>
-        <p>We provide high-quality tiling services with a focus on customer satisfaction. Our team is skilled and experienced, ensuring a perfect finish every time.</p>
-        <img src="path/to/your/image.jpg" alt="Tiling example">
-        <button class="touch-target">Contact Us</button>
-        <p>Get in touch today for a free quote!</p>
+<body class="light">
+  <div class="scatter-field">
+    <i class="fas fa-hammer"></i><i class="fas fa-wrench"></i><i class="fas fa-screwdriver"></i><i class="fas fa-paint-roller"></i><i class="fas fa-trowel"></i><i class="fas fa-hard-hat"></i><i class="fas fa-tools"></i><i class="fas fa-ruler-combined"></i><i class="fas fa-drafting-compass"></i><i class="fas fa-cubes"></i>
+  </div>
+
+  <main class="gallery-wrapper">
+    <div class="header">
+      <div>
+        <a href="index.html"><img src="logo-round.png" style="display:block; width:150px; height:100px; z-index:10; border-radius:35px;" alt="Logo"></a>
+      </div>
+      <div class="theme-toggle">
+        <button id="btn-light" class="active" title="light mode"><i class="fas fa-sun"></i></button>
+        <button id="btn-dark" title="dark mode"><i class="fas fa-moon"></i></button>
+      </div>
     </div>
+
+    <div class="slider-container">
+      <div class="nav-arrow prev" id="prevArrow"><i class="fas fa-chevron-left"></i></div>
+      <div class="nav-arrow next" id="nextArrow"><i class="fas fa-chevron-right"></i></div>
+      <div id="slidesContainer"></div>
+    </div>
+
+    <div class="dots-container" id="dotsContainer"></div>
+
+    <div class="image-library-note">
+      <div class="slide-caption" style="margin:5px; width:auto; height:fit-content;">
+        <a href="building-and-plaster.html">Building and Plaster</a> |
+        <a href="plumbing-services.html">Plumbing Services</a> |
+        <a href="interior-and-finishing.html">Interior & Finishing</a> |
+        <a href="tiling-services.html">Tiling</a> | <a href="ceilings.html">Ceilings</a> |
+        <a href="solar-geyser-energy-installation.html">Solar Energy</a> |
+        <a href="maintenance-services.html">Maintenance</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const galleryItems = [
+        { img: "tileinaction.jpg", title: "Tiling in Action", desc: "Professional floor and wall tiling" },
+        { img: "tileman-at-work.jpg", title: "Master Tiler", desc: "Precision and quality" },
+        { img: "b4tiling.jpg", title: "Preparation", desc: "Surfaces ready for tiling" },
+        { img: "tiling-over-plaster.jpg", title: "Wall Tiling", desc: "Clean and level finishing" },
+        { img: "re-and-whitetile.jpg", title: "Pattern Work", desc: "Decorative tile designs" },
+        { img: "tilegreywall.jpg", title: "Modern Tiling", desc: "Large format tiles" },
+        { img: "tiling-walls-and-floors.jpg", title: "Full Tiling", desc: "Complete bathroom and kitchen solutions" }
+      ];
+      window.Bokoto.initGallery(galleryItems);
+    });
+  </script>
 </body>
 </html>
