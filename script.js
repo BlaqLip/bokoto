@@ -1,137 +1,20 @@
-(function() {
-  // Theme Toggle Logic
+(function () {
   function initTheme() {
-    const btnLight = document.getElementById('btn-light');
-    const btnDark = document.getElementById('btn-dark');
-    const body = document.body;
-
-    function setTheme(theme) {
-      if (theme === 'dark') {
-        body.classList.remove('light');
-        body.classList.add('dark');
-        if (btnDark) btnDark.classList.add('active');
-        if (btnLight) btnLight.classList.remove('active');
-      } else {
-        body.classList.remove('dark');
-        body.classList.add('light');
-        if (btnLight) btnLight.classList.add('active');
-        if (btnDark) btnDark.classList.remove('active');
-      }
-      localStorage.setItem('theme', theme);
-    }
-
-    if (btnLight) btnLight.addEventListener('click', () => setTheme('light'));
-    if (btnDark) btnDark.addEventListener('click', () => setTheme('dark'));
-
-    // Set default theme or system preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      setTheme(prefersDark ? 'dark' : 'light');
-    }
+    const light=document.getElementById('btn-light'),dark=document.getElementById('btn-dark');
+    function set(theme){document.body.classList.toggle('dark',theme==='dark');document.body.classList.toggle('light',theme!=='dark');[[light,'light'],[dark,'dark']].forEach(([b,t])=>{if(b){b.classList.toggle('active',theme===t);b.setAttribute('aria-pressed',String(theme===t));}});try{localStorage.setItem('theme',theme);}catch{}}
+    let saved;try{saved=localStorage.getItem('theme');}catch{}
+    set(saved==='dark'?'dark':'light');light?.addEventListener('click',()=>set('light'));dark?.addEventListener('click',()=>set('dark'));
   }
-
-  // Gallery Slider Logic
-  function initGallery(galleryItems) {
-    const slidesContainer = document.getElementById('slidesContainer');
-    const dotsContainer = document.getElementById('dotsContainer');
-    const prevBtn = document.getElementById('prevArrow');
-    const nextBtn = document.getElementById('nextArrow');
-
-    if (!slidesContainer || !galleryItems) return;
-
-    let currentSlide = 0;
-    let slides = [];
-
-    function buildSlides() {
-      slidesContainer.innerHTML = '';
-      galleryItems.forEach((item, index) => {
-        const slideDiv = document.createElement('div');
-        slideDiv.className = 'slide';
-        if (index === 0) slideDiv.classList.add('active');
-
-        const img = document.createElement('img');
-        img.src = item.img;
-        img.alt = item.title;
-        img.className = 'slide-img';
-        img.loading = 'lazy';
-
-        const captionDiv = document.createElement('div');
-        captionDiv.className = 'slide-caption';
-        captionDiv.innerHTML = `<h3>${item.title}</h3><p>${item.desc}</p>`;
-
-        slideDiv.appendChild(img);
-        slideDiv.appendChild(captionDiv);
-        slidesContainer.appendChild(slideDiv);
-        slides.push(slideDiv);
-      });
-    }
-
-    function updateDotsAndArrows() {
-      slides.forEach((slide, idx) => {
-        slide.classList.toggle('active', idx === currentSlide);
-      });
-
-      if (dotsContainer) {
-        dotsContainer.innerHTML = '';
-        galleryItems.forEach((_, idx) => {
-          const dot = document.createElement('div');
-          dot.className = 'dot';
-          if (idx === currentSlide) dot.classList.add('active');
-          dot.addEventListener('click', () => {
-            currentSlide = idx;
-            updateDotsAndArrows();
-          });
-          dotsContainer.appendChild(dot);
-        });
-      }
-    }
-
-    function nextSlide() {
-      currentSlide = (currentSlide + 1) % galleryItems.length;
-      updateDotsAndArrows();
-    }
-
-    function prevSlide() {
-      currentSlide = (currentSlide - 1 + galleryItems.length) % galleryItems.length;
-      updateDotsAndArrows();
-    }
-
-    if (prevBtn) prevBtn.addEventListener('click', (e) => { e.preventDefault(); prevSlide(); });
-    if (nextBtn) nextBtn.addEventListener('click', (e) => { e.preventDefault(); nextSlide(); });
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowLeft') prevSlide();
-      else if (e.key === 'ArrowRight') nextSlide();
-    });
-
-    // Touch support
-    let touchStartX = 0;
-    slidesContainer.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    slidesContainer.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].screenX;
-      const diff = touchStartX - touchEndX;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) nextSlide();
-        else prevSlide();
-      }
-    });
-
-    buildSlides();
-    updateDotsAndArrows();
+  function initGallery(items){
+    const host=document.getElementById('slidesContainer'),dots=document.getElementById('dotsContainer'),count=document.getElementById('galleryCount');
+    if(!host||!items?.length)return;
+    let current=0;host.replaceChildren();dots?.replaceChildren();
+    const slides=items.map((item,i)=>{const slide=document.createElement('div');slide.className='slide';const image=document.createElement('img');image.src=item.img;image.alt=item.title;image.className='slide-img';image.loading=i===0?'eager':'lazy';image.decoding='async';const caption=document.createElement('div');caption.className='slide-caption';const title=document.createElement('h2');title.textContent=item.title;const desc=document.createElement('p');desc.textContent=item.desc;caption.append(title,desc);slide.append(image,caption);host.append(slide);return slide;});
+    const buttons=items.map((item,i)=>{const button=document.createElement('button');button.type='button';button.className='dot';button.setAttribute('aria-label','Photograph '+(i+1)+': '+item.title);button.addEventListener('click',()=>show(i));dots?.append(button);return button;});
+    function show(i){current=(i+items.length)%items.length;slides.forEach((slide,n)=>{slide.classList.toggle('active',n===current);slide.setAttribute('aria-hidden',String(n!==current));});buttons.forEach((button,n)=>{button.classList.toggle('active',n===current);button.setAttribute('aria-pressed',String(n===current));});if(count)count.textContent='Photograph '+(current+1)+' of '+items.length;}
+    document.getElementById('prevArrow')?.addEventListener('click',()=>show(current-1));document.getElementById('nextArrow')?.addEventListener('click',()=>show(current+1));
+    host.closest('.slider-container')?.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();show(current+(e.key==='ArrowLeft'?-1:1));}});
+    let start;host.addEventListener('touchstart',e=>{start={x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY};},{passive:true});host.addEventListener('touchend',e=>{if(!start)return;const dx=start.x-e.changedTouches[0].clientX,dy=start.y-e.changedTouches[0].clientY;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy))show(current+(dx>0?1:-1));start=null;},{passive:true});show(0);
   }
-
-  // Export to window
-  window.Bokoto = {
-    initTheme: initTheme,
-    initGallery: initGallery
-  };
-
-  // Auto-init theme
-  document.addEventListener('DOMContentLoaded', initTheme);
+  window.Bokoto={initTheme,initGallery};document.addEventListener('DOMContentLoaded',initTheme);
 })();
